@@ -26,8 +26,6 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.9.0
-	// Do not bump testcontainers version. This will cause conflicts with go.opentelemetry.io because of a very old version
-	// found in steve. This is used just for testing.
 	github.com/testcontainers/testcontainers-go v0.31.0
 	github.com/urfave/cli v1.22.14
 	golang.org/x/crypto v0.22.0
