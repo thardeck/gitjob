@@ -80,7 +80,7 @@ jobs:
 
           sed -i \
               -e "s/tag:.*/tag: $tag/" \
-              charts/values.yaml
+              chart/values.yaml
 
           helm package --version="$version" --app-version="$version" -d ./dist ./charts
 
