@@ -82,7 +82,7 @@ jobs:
               -e "s/tag:.*/tag: $tag/" \
               chart/values.yaml
 
-          helm package --version="$version" --app-version="$version" -d ./dist ./charts
+          helm package --version="$version" --app-version="$version" -d ./dist ./chart
 
           for f in $(find dist/ -name '*.tgz'); do
             gh release upload $tag $f
