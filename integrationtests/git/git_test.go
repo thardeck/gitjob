@@ -89,8 +89,10 @@ func TestLatestCommit_NoAuth(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			secretGetter := &secretGetterMock{err: kerrors.NewNotFound(schema.GroupResource{}, "notfound")}
 			latestCommit, err := git.LatestCommit(test.gitjob, secretGetter)
-			if err != test.expectedErr {
-				t.Errorf("expecter error is: %v, but got %v", test.expectedErr, err)
+			if test.expectedErr == nil {
+				require.NoError(t, err)
+			} else {
+				require.Contains(t, err.Error(), test.expectedErr.Error())
 			}
 			if latestCommit != test.expectedCommit {
 				t.Errorf("latestCommit doesn't match. got %s, expected %s", latestCommit, test.expectedCommit)
