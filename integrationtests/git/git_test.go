@@ -211,7 +211,7 @@ func TestLatestCommitSSH(t *testing.T) {
 			},
 			knownHosts:     nil,
 			expectedCommit: latestCommitPrivateRepo,
-			expectedErr:    nil,
+			expectedErr:    fmt.Errorf("ssh: handshake failed: knownhosts: key is unknown"),
 		},
 		"private repo with known host with a wrong host url": {
 			gitjob: &gitjobv1.GitJob{
