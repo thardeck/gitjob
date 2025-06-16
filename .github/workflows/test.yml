@@ -1,0 +1,73 @@
+name: Test Environment Variable Clearing
+
+on:
+  workflow_dispatch:  # Manual trigger for testing
+  push:
+    branches:
+      - test-env-clearing  # Only run on test branch
+
+jobs:
+  test-env-clearing:
+    runs-on: ubuntu-latest
+    env:
+      JOB_LEVEL_VAR: "job-level-secret-value"
+      ANOTHER_JOB_VAR: "another-job-secret"
+    steps:
+      - name: Show initial job-level variables
+        run: |
+          echo "=== Initial State ==="
+          echo "JOB_LEVEL_VAR: '$JOB_LEVEL_VAR'"
+          echo "ANOTHER_JOB_VAR: '$ANOTHER_JOB_VAR'"
+
+      - name: Set variables via GITHUB_ENV
+        run: |
+          echo "=== Setting via GITHUB_ENV ==="
+          echo "GITHUB_ENV_VAR=github-env-value" >> $GITHUB_ENV
+          echo "JOB_LEVEL_VAR=overridden-by-github-env" >> $GITHUB_ENV
+
+      - name: Check variables after GITHUB_ENV modification
+        run: |
+          echo "=== After GITHUB_ENV Modification ==="
+          echo "JOB_LEVEL_VAR: '$JOB_LEVEL_VAR'"
+          echo "ANOTHER_JOB_VAR: '$ANOTHER_JOB_VAR'"
+          echo "GITHUB_ENV_VAR: '$GITHUB_ENV_VAR'"
+
+      - name: Clear variables by setting empty values
+        run: |
+          echo "=== Clearing Variables ==="
+          echo "JOB_LEVEL_VAR=" >> $GITHUB_ENV
+          echo "ANOTHER_JOB_VAR=" >> $GITHUB_ENV
+          echo "GITHUB_ENV_VAR=" >> $GITHUB_ENV
+
+      - name: Check variables after clearing
+        run: |
+          echo "=== After Clearing ==="
+          echo "JOB_LEVEL_VAR: '$JOB_LEVEL_VAR'"
+          echo "ANOTHER_JOB_VAR: '$ANOTHER_JOB_VAR'"
+          echo "GITHUB_ENV_VAR: '$GITHUB_ENV_VAR'"
+
+      - name: Test if variables are truly empty
+        run: |
+          echo "=== Testing Emptiness ==="
+          if [ -z "$JOB_LEVEL_VAR" ]; then
+            echo "✅ JOB_LEVEL_VAR is empty/unset"
+          else
+            echo "❌ JOB_LEVEL_VAR still has value: '$JOB_LEVEL_VAR'"
+          fi
+          
+          if [ -z "$ANOTHER_JOB_VAR" ]; then
+            echo "✅ ANOTHER_JOB_VAR is empty/unset"
+          else
+            echo "❌ ANOTHER_JOB_VAR still has value: '$ANOTHER_JOB_VAR'"
+          fi
+          
+          if [ -z "$GITHUB_ENV_VAR" ]; then
+            echo "✅ GITHUB_ENV_VAR is empty/unset"
+          else
+            echo "❌ GITHUB_ENV_VAR still has value: '$GITHUB_ENV_VAR'"
+          fi
+
+      - name: Final verification with printenv
+        run: |
+          echo "=== All Environment Variables ==="
+          printenv | grep -E "(JOB_LEVEL_VAR|ANOTHER_JOB_VAR|GITHUB_ENV_VAR)" || echo "No matching variables found"
